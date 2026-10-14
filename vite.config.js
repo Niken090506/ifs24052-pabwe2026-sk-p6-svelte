@@ -4,13 +4,20 @@ import { svelteTesting } from "@testing-library/svelte/vite";
 import tailwindcss from "@tailwindcss/vite";
 import process from "process";
 
-export default defineConfig(({ mode }) => {
+export default defineConfig((configEnv = {}) => {
+  const mode = configEnv.mode || "development";
   const env = loadEnv(mode, process.cwd(), "");
   return {
     plugins: [
       svelte({
         prebundleSvelteLibraries: false,
       }),
+      {
+        name: "vite-plugin-svelte:config",
+        api: {
+          options: {},
+        },
+      },
       tailwindcss(),
       svelteTesting(),
     ],

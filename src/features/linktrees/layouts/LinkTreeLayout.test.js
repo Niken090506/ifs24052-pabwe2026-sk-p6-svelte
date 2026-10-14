@@ -70,7 +70,7 @@ describe("LinkTreeLayout", () => {
 
   it("should stay on page when isProfile is triggered and profile exists", async () => {
     vi.spyOn(apiHelper, "getAccessToken").mockReturnValue("valid-token");
-    vi.spyOn(usersStore, "asyncSetProfile").mockImplementation(() => Promise.resolve());
+    const navSpy = vi.spyOn(routerModule, "navigate").mockImplementation(() => {});
 
     const { wrapper, usersStore: uStore } = renderWithProviders(LinkTreeLayout, {
       preloadedState: {
@@ -79,10 +79,12 @@ describe("LinkTreeLayout", () => {
       },
     });
 
-    uStore.setIsProfile(true);
-    await new Promise((r) => setTimeout(r, 10));
-
     expect(wrapper.text()).toContain("Logged User");
+
+    uStore.setIsProfile(true);
+    await new Promise((r) => setTimeout(r, 20));
+
+    expect(navSpy).not.toHaveBeenCalledWith("/auth/login");
   });
 
   it("should redirect to login when isProfile is triggered and profile is null", async () => {
