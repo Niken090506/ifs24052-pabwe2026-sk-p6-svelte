@@ -107,25 +107,14 @@ pipeline {
 
                     echo "=== Trivy Scan ==="
 
-                    # Ensure a valid base SARIF file exists in case of network timeouts
-                    echo '{"$schema":"https://raw.githubusercontent.com/oasis-tcs/sarif-spec/master/Schemata/sarif-schema-2.1.0.json","version":"2.1.0","runs":[{"tool":{"driver":{"name":"Trivy","rules":[]}},"results":[]}]}' > trivy-results.sarif
-
                     trivy fs \
                         --cache-dir .trivy-cache \
-                        --db-repository ghcr.io/aquasecurity/trivy-db:2,public.ecr.aws/aquasecurity/trivy-db:2 \
                         --scanners vuln \
                         --severity HIGH,CRITICAL \
                         --format sarif \
                         --output trivy-results.sarif \
                         --exit-code 1 \
-                        . || {
-                            SCAN_EXIT=$?
-                            if [ -s trivy-results.sarif ] && grep -q '"ruleId"' trivy-results.sarif 2>/dev/null; then
-                                echo "Vulnerabilities found with severity HIGH/CRITICAL!"
-                                exit $SCAN_EXIT
-                            fi
-                            echo "Trivy scan finished (exit code: $SCAN_EXIT)."
-                        }
+                        .
 
                     echo "=== Trivy Result ==="
                     ls -lh trivy-results.sarif
