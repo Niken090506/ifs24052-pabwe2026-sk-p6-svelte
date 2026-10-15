@@ -28,6 +28,8 @@ export default defineConfig((configEnv = {}) => {
       port: Number(env.APP_PORT) || 3004,
     },
     build: {
+      sourcemap: true,
+      target: "esnext",
       chunkSizeWarningLimit: 1500,
     },
     define: {
